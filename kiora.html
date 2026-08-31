@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KIORA — Sparked Energy</title>
+<meta name="description" content="KIORA Sparked Energy. Five bright flavors, clean energy and a bold visual identity.">
+<style>
+:root{
+  --ink:#101010;
+  --paper:#f5f0e7;
+  --blue:#2947ff;
+  --lime:#caff35;
+  --pink:#ff5ead;
+  --cyan:#67dcff;
+  --peach:#ffad72;
+  --violet:#8e70ff;
+  --accent:#2947ff;
+  --accent-rgb:41,71,255;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}
+body{min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font:inherit}
+::selection{background:var(--lime);color:#111}
+.grain{position:fixed;inset:0;z-index:100;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.82' numOctaves='4' type='fractalNoise'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E")}
+.nav{position:fixed;z-index:60;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;padding:10px 12px 10px 16px;border:2px solid #111;border-radius:18px;background:rgba(245,240,231,.86);backdrop-filter:blur(14px)}
+.logo{font-weight:950;letter-spacing:-.08em;font-size:24px;line-height:1}
+.logo span{font-size:9px;letter-spacing:.1em;background:var(--lime);border-radius:999px;padding:4px 7px;margin-left:7px;vertical-align:middle}
+.navlinks{display:flex;gap:4px}
+.navlinks a{padding:10px 12px;border-radius:12px;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+.navlinks a:hover{background:#111;color:#fff}
+.navlinks .shoplink{background:var(--blue);color:#fff}
+.hero{min-height:108svh;padding:17vh 4vw 7vh;display:grid;align-items:end;position:relative;overflow:hidden;background:var(--paper)}
+.hero:before{content:"";position:absolute;right:-9vw;top:-14vw;width:49vw;height:49vw;border-radius:50%;background:var(--lime)}
+.hero:after{content:"";position:absolute;left:-12vw;bottom:-19vw;width:36vw;height:36vw;border-radius:50%;background:var(--pink)}
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.12fr .88fr;gap:5vw;align-items:end}
+.kicker{display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:900;margin-bottom:18px}
+.kicker:before{content:"";width:34px;height:3px;background:#111}
+h1{font-size:clamp(68px,11vw,174px);line-height:.75;letter-spacing:-.095em;margin:0;font-weight:950;max-width:8.5ch}
+.hero-copy{justify-self:end;max-width:520px;padding-bottom:5vh}
+.hero-copy p{font-size:18px;line-height:1.62;margin:0 0 22px}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{border:2px solid #111;border-radius:999px;background:transparent;color:#111;padding:14px 18px;font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:.2s}
+.btn.primary{background:#111;color:#fff}
+.btn:hover{transform:translateY(-2px)}
+.ticker{overflow:hidden;border-top:2px solid #111;border-bottom:2px solid #111;background:var(--lime)}
+.ticker-track{display:flex;gap:28px;align-items:center;white-space:nowrap;width:max-content;padding:14px 0}
+.ticker strong{font-size:42px;letter-spacing:-.05em}
+.ticker i{font-size:22px;font-style:normal}
+.selector{height:500vh;position:relative;background:#070709;color:#fff}
+.selector-stage{position:sticky;top:0;height:100svh;overflow:hidden}
+#canCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.selector-stage:before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 50% 48%,transparent 0 13%,rgba(0,0,0,.10) 32%,rgba(0,0,0,.58) 74%,rgba(0,0,0,.90) 100%)}
+.selector-stage:after{content:"";position:absolute;z-index:2;pointer-events:none;left:50%;top:50%;width:min(65vw,780px);height:min(65vw,780px);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(var(--accent-rgb),.14),transparent 57%);filter:blur(14px);transition:background .6s}
+.selector-header{position:absolute;z-index:5;left:4vw;right:4vw;top:8vh;display:flex;justify-content:space-between;align-items:flex-start;gap:24px;pointer-events:none}
+.selector-header .mini{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#8e9096}
+.lock-state{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#a7a9ae}
+.lock-state i{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px rgba(var(--accent-rgb),.75)}
+.flavor-copy{position:absolute;z-index:5;left:4vw;bottom:8vh;width:min(430px,72vw);pointer-events:none}
+.step{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:900;margin-bottom:10px}
+.flavor-copy h2{font-size:clamp(50px,7.4vw,108px);line-height:.82;letter-spacing:-.08em;margin:0 0 12px}
+.flavor-copy p{font-size:16px;line-height:1.65;color:#babcc2;margin:0;max-width:40ch}
+.flavor-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.flavor-meta span{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#d3d4d7;background:rgba(255,255,255,.025)}
+.flavor-list{position:absolute;z-index:6;right:4vw;top:50%;transform:translateY(-50%);display:grid;gap:10px}
+.flavor-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(4,4,5,.40);backdrop-filter:blur(12px);font-size:10px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#777b82;cursor:pointer;transition:.3s}
+.flavor-item i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.flavor-item.active{color:#fff;border-color:rgba(var(--accent-rgb),.68);background:rgba(255,255,255,.06);transform:translateX(-10px)}
+.flavor-item.active i{box-shadow:0 0 18px rgba(var(--accent-rgb),.75)}
+.selector-footer{position:absolute;z-index:6;left:4vw;right:4vw;bottom:3vh;display:flex;align-items:center;gap:16px}
+.selector-progress{flex:1;height:3px;background:rgba(255,255,255,.10)}
+.selector-progress i{display:block;height:100%;width:20%;background:var(--accent);transition:width .5s ease}
+.selector-count{font-size:10px;letter-spacing:.16em;color:#8b8e95}
+.section{padding:13vh 4vw;position:relative}
+.section-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:6vw;align-items:start}
+.section .badge{display:inline-flex;border:2px solid currentColor;border-radius:999px;padding:9px 12px;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+.section h3{font-size:clamp(52px,7vw,110px);line-height:.84;letter-spacing:-.078em;margin:0;max-width:8ch}
+.section p{font-size:17px;line-height:1.7;margin:0;max-width:58ch}
+.section.cyan{background:var(--cyan)}
+.section.paper{background:var(--paper)}
+.section.pink{background:var(--pink)}
+.section.blue{background:var(--blue);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:46px}
+.stat{border:2px solid currentColor;border-radius:22px;padding:22px}
+.stat b{display:block;font-size:48px;line-height:.9;letter-spacing:-.055em}
+.stat span{display:block;margin-top:9px;font-size:12px;line-height:1.5;font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:48px}
+.card{border:2px solid #111;border-radius:26px;padding:24px;min-height:260px;background:rgba(255,255,255,.26)}
+.card:nth-child(2){background:var(--lime)}
+.card:nth-child(3){background:var(--peach)}
+.card small{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:900}
+.card h4{font-size:34px;line-height:.92;letter-spacing:-.05em;margin:52px 0 12px}
+.card p{font-size:14px;line-height:1.6}
+.flavor-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:48px}
+.flavor-card{min-height:330px;border:2px solid #111;border-radius:24px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;background:var(--fc)}
+.flavor-card small{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.flavor-card b{font-size:30px;line-height:.9;letter-spacing:-.05em}
+.flavor-card span{font-size:12px;font-weight:800}
+.quote{padding:17vh 4vw;background:#111;color:#fff;text-align:center}
+.quote p{font-size:clamp(48px,8vw,126px);line-height:.84;letter-spacing:-.08em;font-weight:950;max-width:12ch;margin:0 auto}
+.quote span{color:var(--lime)}
+.faq{background:var(--paper);padding:13vh 4vw}
+.faq-head{display:grid;grid-template-columns:.8fr 1.2fr;gap:6vw}
+.faq h3{font-size:clamp(52px,7vw,104px);line-height:.84;letter-spacing:-.078em;margin:0}
+.faq-list{border-top:2px solid #111}
+.faq-item{border-bottom:2px solid #111;padding:20px 0}
+.faq-q{display:flex;justify-content:space-between;gap:20px;font-weight:900;font-size:20px;cursor:pointer}
+.faq-a{max-height:0;overflow:hidden;transition:.35s;color:#555;line-height:1.65}
+.faq-item.open .faq-a{max-height:140px;padding-top:12px}
+.shop{padding:14vh 4vw;background:var(--lime)}
+.shop-head{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}
+.shop h3{font-size:clamp(62px,9vw,140px);line-height:.78;letter-spacing:-.09em;margin:0}
+.pack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:50px}
+.pack{border:2px solid #111;border-radius:26px;padding:24px;background:rgba(255,255,255,.22)}
+.pack:nth-child(2){background:#fff}
+.pack small{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.pack h4{font-size:34px;letter-spacing:-.05em;margin:32px 0 10px}
+.pack p{font-size:14px;line-height:1.55;margin:0 0 18px}
+.price{font-size:28px;font-weight:950;margin-bottom:16px}
+.add{width:100%;padding:13px;border:2px solid #111;border-radius:999px;background:#111;color:#fff;font-weight:900;text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+.toast{position:fixed;z-index:90;right:20px;bottom:20px;background:#111;color:#fff;border-radius:14px;padding:14px 18px;font-size:12px;font-weight:900;transform:translateY(40px);opacity:0;pointer-events:none;transition:.3s}
+.toast.show{transform:translateY(0);opacity:1}
+.footer{padding:28px 4vw 36px;border-top:2px solid #111;background:var(--paper);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+@media(max-width:980px){
+  .hero-inner,.section-grid,.faq-head,.shop-head{grid-template-columns:1fr}
+  .hero-copy{justify-self:start;padding-bottom:0}
+  .stats,.cards,.pack-grid{grid-template-columns:1fr}
+  .flavor-grid{grid-template-columns:repeat(2,1fr)}
+  .flavor-list{right:20px}
+}
+@media(max-width:680px){
+  .nav{left:10px;right:10px}
+  .navlinks a:not(.shoplink){display:none}
+  .hero,.section,.faq,.shop{padding-left:20px;padding-right:20px}
+  h1{font-size:clamp(58px,20vw,94px)}
+  .selector-header{left:20px;right:20px}
+  .flavor-copy{left:20px;bottom:10vh;width:68vw}
+  .flavor-list{right:12px;gap:7px}
+  .flavor-item{padding:8px 10px;font-size:9px}
+  .flavor-item span{max-width:28vw;overflow:hidden;text-overflow:ellipsis}
+  .selector-footer{left:20px;right:20px}
+  .flavor-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header class="nav">
+  <div class="logo">KIORA<span>ENERGY</span></div>
+  <nav class="navlinks">
+    <a href="#flavors">Flavors</a>
+    <a href="#inside">Inside</a>
+    <a href="#about">About</a>
+    <a href="#shop" class="shoplink">Shop now</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="kicker">Sparked energy / five flavors</div>
+      <h1>MAKE THE DAY HIT DIFFERENT.</h1>
+    </div>
+    <div class="hero-copy">
+      <p>Bright flavor. Clean energy. No boring cans. KIORA is built for long days, louder nights and everything in between.</p>
+      <div class="actions">
+        <a class="btn primary" href="#flavors">Find your flavor</a>
+        <a class="btn" href="#inside">What’s inside</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ticker">
+  <div class="ticker-track">
+    <strong>ZERO BORING</strong><i>✦</i><strong>FIVE FLAVORS</strong><i>✦</i><strong>BRIGHT ENERGY</strong><i>✦</i>
+    <strong>ZERO BORING</strong><i>✦</i><strong>FIVE FLAVORS</strong><i>✦</i><strong>BRIGHT ENERGY</strong><i>✦</i>
+  </div>
+</section>
+
+<section class="selector" id="flavors">
+  <div class="selector-stage">
+    <canvas id="canCanvas"></canvas>
+    <div class="selector-header">
+      <div class="mini">KIORA / Flavor selector</div>
+      <div class="lock-state"><i></i><span id="lockText">Scorri per esplorare ogni lattina</span></div>
+    </div>
+
+    <div class="flavor-copy">
+      <div class="step" id="flavorStep">01 / Original</div>
+      <h2 id="flavorTitle">ORIGINAL</h2>
+      <p id="flavorText">Citrus-forward and crisp. The one that started the whole KIORA line.</p>
+      <div class="flavor-meta" id="flavorMeta"></div>
+    </div>
+
+    <div class="flavor-list" id="flavorList"></div>
+
+    <div class="selector-footer">
+      <div class="selector-progress"><i id="selectorProgress"></i></div>
+      <div class="selector-count" id="selectorCount">01 / 05</div>
+    </div>
+  </div>
+</section>
+
+<section class="section cyan" id="inside">
+  <div class="section-grid">
+    <div>
+      <div class="badge">Inside the can</div>
+      <h3>ENERGY, WITHOUT THE HEAVY FEEL.</h3>
+    </div>
+    <div>
+      <p>KIORA combines caffeine, electrolytes and a crisp sparkling base. Built to stay light, refreshing and easy to drink from the first sip to the last.</p>
+      <div class="stats">
+        <div class="stat"><b>80mg</b><span>Caffeine per can</span></div>
+        <div class="stat"><b>0g</b><span>Added sugar</span></div>
+        <div class="stat"><b>330ml</b><span>Cold sparkling energy</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section paper" id="about">
+  <div class="section-grid">
+    <div>
+      <div class="badge">Why KIORA</div>
+      <h3>BRIGHT BY DESIGN.</h3>
+    </div>
+    <div>
+      <p>KIORA is deliberately simple, graphic and easy to recognize. Every flavor gets its own color identity while the structure of the packaging stays consistent across the range.</p>
+    </div>
+  </div>
+  <div class="cards">
+    <article class="card"><small>01 / Taste</small><h4>Clean finish</h4><p>Sharp, sparkling profiles designed to stay refreshing rather than overly sweet.</p></article>
+    <article class="card"><small>02 / Energy</small><h4>Easy lift</h4><p>A balanced amount of caffeine for work, training, nights out and everything between.</p></article>
+    <article class="card"><small>03 / Identity</small><h4>Easy to spot</h4><p>A strong color system keeps every can different while the KIORA family stays recognizable.</p></article>
+  </div>
+</section>
+
+<section class="section pink">
+  <div class="section-grid">
+    <div>
+      <div class="badge">The lineup</div>
+      <h3>ONE SYSTEM.<br>FIVE MOODS.</h3>
+    </div>
+    <div>
+      <p>Each flavor has its own tone, color and attitude. The range is designed to work together on shelf, online and across campaign content.</p>
+    </div>
+  </div>
+  <div class="flavor-grid">
+    <div class="flavor-card" style="--fc:#2947ff;color:#fff"><small>01</small><b>Original</b><span>Citrus / crisp</span></div>
+    <div class="flavor-card" style="--fc:#ffad72"><small>02</small><b>Peach</b><span>Soft / sparkling</span></div>
+    <div class="flavor-card" style="--fc:#8e70ff;color:#fff"><small>03</small><b>Night Berry</b><span>Dark fruit / sharp</span></div>
+    <div class="flavor-card" style="--fc:#67dcff"><small>04</small><b>Ice Citrus</b><span>Cold / clean</span></div>
+    <div class="flavor-card" style="--fc:#caff35"><small>05</small><b>Lime Rush</b><span>Acid / bright</span></div>
+  </div>
+</section>
+
+<section class="quote">
+  <p>NOT JUST ANOTHER <span>ENERGY DRINK.</span></p>
+</section>
+
+<section class="section blue">
+  <div class="section-grid">
+    <div>
+      <div class="badge">Made for motion</div>
+      <h3>WORK. TRAIN. GO OUT. REPEAT.</h3>
+    </div>
+    <div>
+      <p>KIORA is built around a simple idea: energy should fit the day instead of taking it over. Cold, light and easy to keep moving with.</p>
+    </div>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="faq-head">
+    <div><div class="badge">Questions</div><h3>GOOD TO KNOW.</h3></div>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q"><span>How much caffeine is in one can?</span><span>+</span></div><div class="faq-a">Each 330 ml can contains 80 mg of caffeine.</div></div>
+      <div class="faq-item"><div class="faq-q"><span>Does KIORA contain added sugar?</span><span>+</span></div><div class="faq-a">No. The range is designed with zero grams of added sugar.</div></div>
+      <div class="faq-item"><div class="faq-q"><span>Are all five flavors always available?</span><span>+</span></div><div class="faq-a">The core range is permanent, while seasonal editions can rotate throughout the year.</div></div>
+      <div class="faq-item"><div class="faq-q"><span>When should I drink it?</span><span>+</span></div><div class="faq-a">Whenever you want a light caffeine boost. As with any caffeinated drink, consume responsibly.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="shop" id="shop">
+  <div class="shop-head">
+    <h3>FIND YOUR KIORA.</h3>
+    <a href="#flavors" class="btn">Explore flavors</a>
+  </div>
+  <div class="pack-grid">
+    <article class="pack"><small>Starter</small><h4>Mixed 6 pack</h4><p>Try the full lineup before picking a favorite.</p><div class="price">€16</div><button class="add">Add to bag</button></article>
+    <article class="pack"><small>Most popular</small><h4>Mixed 12 pack</h4><p>A balanced mix of all five flavors.</p><div class="price">€29</div><button class="add">Add to bag</button></article>
+    <article class="pack"><small>Your flavor</small><h4>Single flavor 12</h4><p>Pick one flavor and make it your default.</p><div class="price">€27</div><button class="add">Choose flavor</button></article>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>© KIORA ENERGY</span>
+  <span>Original · Peach · Night Berry · Ice Citrus · Lime Rush</span>
+</footer>
+
+<div class="toast" id="toast">Added to your bag.</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(() => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  const root=document.documentElement;
+  const titleEl=document.getElementById('flavorTitle');
+  const textEl=document.getElementById('flavorText');
+  const stepEl=document.getElementById('flavorStep');
+  const metaEl=document.getElementById('flavorMeta');
+  const listEl=document.getElementById('flavorList');
+  const progressEl=document.getElementById('selectorProgress');
+  const countEl=document.getElementById('selectorCount');
+  const lockText=document.getElementById('lockText');
+
+  const flavors=[
+    {name:'ORIGINAL',color:'#2947ff',rgb:'41,71,255',text:'Citrus-forward and crisp. The one that started the whole KIORA line.',meta:['80 mg caffeine','Citrus','Core flavor']},
+    {name:'PEACH',color:'#ffad72',rgb:'255,173,114',text:'Soft peach, bright fizz and an easy finish built for long afternoons.',meta:['80 mg caffeine','Peach','Soft finish']},
+    {name:'NIGHT BERRY',color:'#8e70ff',rgb:'142,112,255',text:'Dark berries with a sharper edge. Built for late nights and louder plans.',meta:['80 mg caffeine','Berry','Night edition']},
+    {name:'ICE CITRUS',color:'#67dcff',rgb:'103,220,255',text:'Cold citrus with a clean snap. The brightest and freshest flavor in the lineup.',meta:['80 mg caffeine','Citrus','Extra fresh']},
+    {name:'LIME RUSH',color:'#caff35',rgb:'202,255,53',text:'Acid lime, extra sparkle and a finish that hits fast and stays fresh.',meta:['80 mg caffeine','Lime','Bright finish']}
+  ];
+
+  listEl.innerHTML=flavors.map((f,i)=>`<div class="flavor-item" data-index="${i}" style="--c:${f.color}"><i></i><span>${String(i+1).padStart(2,'0')} / ${f.name}</span></div>`).join('');
+
+  let active=0;
+  function updateUI(i){
+    active=i;
+    const f=flavors[i];
+    root.style.setProperty('--accent',f.color);
+    root.style.setProperty('--accent-rgb',f.rgb);
+    titleEl.textContent=f.name;
+    textEl.textContent=f.text;
+    stepEl.textContent=`${String(i+1).padStart(2,'0')} / ${f.name}`;
+    metaEl.innerHTML=f.meta.map(m=>`<span>${m}</span>`).join('');
+    countEl.textContent=`${String(i+1).padStart(2,'0')} / ${String(flavors.length).padStart(2,'0')}`;
+    progressEl.style.width=((i+1)/flavors.length*100)+'%';
+    document.querySelectorAll('.flavor-item').forEach((el,n)=>el.classList.toggle('active',n===i));
+  }
+
+  const canvas=document.getElementById('canCanvas');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+
+  const scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x070709,.046);
+
+  const camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,80);
+  camera.position.set(0,.18,10.6);
+
+  scene.add(new THREE.AmbientLight(0x9aa0b6,.72));
+  const key=new THREE.DirectionalLight(0xffffff,2.0); key.position.set(3,4,6); scene.add(key);
+  const spot=new THREE.SpotLight(0xffffff,34,28,.36,.72,1.5);
+  spot.position.set(1.4,5.5,6.8); scene.add(spot); scene.add(spot.target);
+  const colorLight=new THREE.PointLight(0x2947ff,14,20,2); colorLight.position.set(-1.4,1.3,4); scene.add(colorLight);
+
+  const floor=new THREE.Mesh(
+    new THREE.CircleGeometry(8.5,48),
+    new THREE.MeshStandardMaterial({color:0x0a0a0d,roughness:.9})
+  );
+  floor.rotation.x=-Math.PI/2; floor.position.y=-2.35; scene.add(floor);
+
+  const rings=new THREE.Group(); scene.add(rings);
+  for(let i=0;i<2;i++){
+    const ring=new THREE.Mesh(
+      new THREE.TorusGeometry(4.8+i*1.5,.018,6,96),
+      new THREE.MeshBasicMaterial({color:i?0xffffff:0x2947ff,transparent:true,opacity:i?.025:.07})
+    );
+    ring.rotation.x=Math.PI/2; ring.rotation.z=i*.4; ring.position.y=-1.25; rings.add(ring);
+  }
+
+  const dustCount=innerWidth<700?70:140;
+  const dustPos=new Float32Array(dustCount*3);
+  for(let i=0;i<dustCount;i++){
+    dustPos[i*3]=(Math.random()-.5)*18;
+    dustPos[i*3+1]=(Math.random()-.5)*11;
+    dustPos[i*3+2]=(Math.random()-.5)*18;
+  }
+  const dustGeo=new THREE.BufferGeometry();
+  dustGeo.setAttribute('position',new THREE.BufferAttribute(dustPos,3));
+  scene.add(new THREE.Points(dustGeo,new THREE.PointsMaterial({color:0xffffff,size:.022,transparent:true,opacity:.08,depthWrite:false})));
+
+  function makeTexture(f){
+    const c=document.createElement('canvas'); c.width=512; c.height=512;
+    const x=c.getContext('2d');
+    x.fillStyle=f.color; x.fillRect(0,0,512,512);
+    x.fillStyle='#111'; x.beginPath(); x.arc(430,88,132,0,Math.PI*2); x.fill();
+    x.fillStyle='rgba(255,255,255,.12)'; x.fillRect(0,0,512,58);
+    x.save(); x.translate(256,256); x.rotate(-Math.PI/2); x.textAlign='center';
+    x.fillStyle='#fff'; x.font='900 96px Arial'; x.fillText('KIORA',0,-46);
+    x.fillStyle='#111'; x.font='900 34px Arial'; x.fillText(f.name,0,50); x.restore();
+    x.fillStyle='#111'; x.font='900 18px Arial'; x.fillText('SPARKED ENERGY',26,39);
+    const tex=new THREE.CanvasTexture(c); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=2; return tex;
+  }
+
+  function makeCan(f){
+    const g=new THREE.Group();
+    const spin=new THREE.Group(); g.add(spin);
+    const body=new THREE.Mesh(
+      new THREE.CylinderGeometry(1.02,1.02,3.8,40,1,true),
+      new THREE.MeshStandardMaterial({map:makeTexture(f),roughness:.34,metalness:.14})
+    );
+    spin.add(body);
+    const metal=new THREE.MeshStandardMaterial({color:0xd4d5d9,roughness:.22,metalness:.75});
+    const top=new THREE.Mesh(new THREE.CylinderGeometry(1.025,1.025,.11,40),metal);
+    const bottom=new THREE.Mesh(new THREE.CylinderGeometry(1.025,1.025,.11,40),metal);
+    top.position.y=1.96; bottom.position.y=-1.96; spin.add(top,bottom);
+    const glow=new THREE.Mesh(
+      new THREE.CylinderGeometry(1.14,1.14,4.08,32,1,true),
+      new THREE.MeshBasicMaterial({color:new THREE.Color(f.color),transparent:true,opacity:0,side:THREE.DoubleSide})
+    );
+    g.add(glow);
+    g.userData={spin,glow};
+    return g;
+  }
+
+  const cans=flavors.map(makeCan);
+  cans.forEach((c,i)=>scene.add(c));
+
+  let scrollP=0;
+  let targetSlide=0;
+  let currentSlide=0;
+
+  function layoutCans(){
+    cans.forEach((can,i)=>{
+      const off=i-currentSlide;
+      const dist=Math.abs(off);
+      const selected=dist<.45;
+      const x=off*3.65;
+      const y=selected?.08:-.10;
+      const z=selected?1.65:-.35-Math.min(dist,2)*.45;
+      const s=selected?1.15:(dist<1.4?.76:.58);
+      can.position.x += (x-can.position.x)*.10;
+      can.position.y += (y-can.position.y)*.10;
+      can.position.z += (z-can.position.z)*.10;
+      const ns=can.scale.x+(s-can.scale.x)*.10;
+      can.scale.setScalar(ns);
+      can.rotation.y += ((off>0?-.34:.34)-can.rotation.y)*.08;
+      can.userData.glow.material.opacity += ((selected?.075:0)-can.userData.glow.material.opacity)*.10;
+    });
+  }
+
+  ScrollTrigger.create({
+    trigger:'.selector',
+    start:'top top',
+    end:'bottom bottom',
+    scrub:1,
+    onUpdate:self=>{
+      scrollP=self.progress;
+      targetSlide=self.progress*(flavors.length-1);
+      const idx=Math.min(flavors.length-1,Math.max(0,Math.round(targetSlide)));
+      if(idx!==active) updateUI(idx);
+      lockText.textContent='Scorri lentamente tra le varianti';
+    },
+    onLeave:()=>lockText.textContent='Continua a scorrere',
+    onLeaveBack:()=>lockText.textContent='Continua a scorrere'
+  });
+
+  document.querySelectorAll('.flavor-item').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const i=Number(el.dataset.index);
+      const selector=document.querySelector('.selector');
+      const max=selector.offsetHeight-innerHeight;
+      window.scrollTo({top:selector.offsetTop+(i/(flavors.length-1))*max,behavior:'smooth'});
+    });
+  });
+
+  gsap.to('.ticker-track',{xPercent:-34,ease:'none',scrollTrigger:{trigger:'.ticker',start:'top bottom',end:'bottom top',scrub:1}});
+  gsap.from('.hero h1',{y:48,opacity:0,duration:.9,ease:'power3.out'});
+  gsap.from('.hero-copy',{y:26,opacity:0,duration:.75,delay:.12,ease:'power2.out'});
+  gsap.utils.toArray('.section h3,.section p,.stat,.card,.flavor-card,.faq-head h3,.faq-item,.pack').forEach(el=>{
+    gsap.from(el,{y:26,opacity:0,duration:.65,ease:'power2.out',scrollTrigger:{trigger:el,start:'top 90%',toggleActions:'play none none reverse'}});
+  });
+
+  document.querySelectorAll('.faq-q').forEach(q=>{
+    q.addEventListener('click',()=>{
+      const item=q.closest('.faq-item');
+      const was=item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));
+      if(!was)item.classList.add('open');
+    });
+  });
+
+  const toast=document.getElementById('toast');
+  document.querySelectorAll('.add').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),1400);
+    });
+  });
+
+  let mx=0,my=0;
+  addEventListener('pointermove',e=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2});
+
+  function resize(){
+    camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth,innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.25));
+    ScrollTrigger.refresh();
+  }
+  addEventListener('resize',resize);
+
+  function render(t){
+    requestAnimationFrame(render);
+    const time=t*.001;
+    currentSlide += (targetSlide-currentSlide)*.085;
+    layoutCans();
+
+    const f=flavors[active];
+    colorLight.color.lerp(new THREE.Color(f.color),.08);
+    const sel=cans[active];
+    spot.target.position.lerp(sel.position,.12);
+    colorLight.position.x += (sel.position.x*.20-colorLight.position.x)*.06;
+
+    cans.forEach((can,i)=>{
+      can.userData.spin.rotation.y += (i===active?.0024:.00025);
+      can.userData.spin.rotation.z = Math.sin(time*.55+i)*.004;
+    });
+
+    rings.rotation.z+=.00045;
+    camera.position.x += (mx*.08-camera.position.x)*.02;
+    camera.position.y += ((my*-.05)+.18-camera.position.y)*.02;
+    camera.lookAt(mx*.04,my*-.025,0);
+
+    renderer.render(scene,camera);
+  }
+
+  updateUI(0);
+  render(0);
+})();
+</script>
+</body>
+</html>
